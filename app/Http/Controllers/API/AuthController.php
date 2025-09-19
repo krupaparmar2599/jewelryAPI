@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Log;
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
 
 class AuthController extends Controller
 {
@@ -26,6 +31,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'is_active' => true,
         ]);
+
+            event(new UserRegistered($user));
+// Log::info('UserRegistered event fired for: '.$user->email);
+
+// Mail::to($user->email)->send(new WelcomeMail($user));
+// Log::info('Mail sent to user from controller : '.$user->email);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

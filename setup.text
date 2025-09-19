@@ -97,5 +97,41 @@ php artisan make:controller ProductController
 
 
 
-npm create vue@latest
-y
+
+=---------------------------------------------- send mail to register
+1️⃣ Create Event
+php artisan make:event UserRegistered
+Add user property in event constructor
+
+2️⃣ Create Listener
+php artisan make:listener SendWelcomeMailListener --event=UserRegistered
+Implement ShouldQueue if background queue use karvi
+
+3️⃣ Create Mailable
+php artisan make:mail WelcomeMail --markdown=emails.welcome
+Use for welcome email template
+
+4️⃣ Fire Event in AuthController
+After user creation, add:
+event(new UserRegistered($user));
+
+5️⃣ Setup Mailtrap in .env
+php artisan config:clear
+php artisan cache:clear
+
+6️⃣ Queue Setup (Optional)
+php artisan queue:table
+php artisan migrate
+
+Run queue worker:
+php artisan queue:work
+---------------------------------------------------
+--------------------🔹 Direct Job + Queue Steps-------------------------
+1️⃣ Create Job
+php artisan make:job SendWelcomeMailJob
+2️⃣ Define Job Logic app/Jobs/SendWelcomeMailJob.php ma:
+
+3️⃣ Dispatch Job in Controller
+AuthController → register function ma, user create thay pachhi:
+SendWelcomeMailJob::dispatch($user);
+---------------------------------------------------
