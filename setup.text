@@ -1,137 +1,34 @@
-1️⃣ Create project
+1-- Create project
 → composer create-project laravel/laravel laravel-api "11.*"
 
-2️⃣ Go into project folder
+2-- Go into project folder
 → cd laravel-api
 
-3️⃣ Serve on port 2599
+3-- Serve on port 2599
 → php artisan serve --port=2599
 
-4️⃣ Create MySQL database: laravel_api
+4-- Create MySQL database: laravel_api
 
-5️⃣ Update .env:
+5-- Update .env:
 DB_DATABASE=laravel_api
 DB_USERNAME=root
 DB_PASSWORD=
 APP_URL=http://127.0.0.1:2599
 
-6️⃣ Modify create_users_table.php
+6-- Modify create_users_table.php
 → Add phone, is_active, is_deleted fields
 
-7️⃣ Run migration
+7-- Run migration
 → php artisan migrate
 
-8️⃣ Update User.php model
+8-- Update User.php model
 → Add fillable & hidden properties
 
-9️⃣ Create controller
+9-- Create controller
 → php artisan make:controller API/UserController
 
-🔟 In UserController.php, add:
+10-- In UserController.php, add:
 
 index() → get all users
 
 store() → create user
-
-1️⃣1️⃣ Create routes/api.php
-→ Add:
-Route::get('/users', [UserController::class, 'index']);
-Route::post('/users', [UserController::class, 'store']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
-1️⃣2️⃣ Edit bootstrap/app.php:
-web: __DIR__.'/../routes/web.php',
-    api: __DIR__.'/../routes/api.php', ------ add this line 
-    
-1️⃣3️⃣ Test API in Postman:
-GET http://127.0.0.1:2599/api/users
-POST http://127.0.0.1:2599/api/users
-
-🔐 Sanctum Authentication Setup
-1️⃣4️⃣ Create AuthController
-→ php artisan make:controller AuthController
-
-1️⃣5️⃣ Add methods
-
-register()
-
-login()
-
-1️⃣6️⃣ Add auth routes in routes/api.php
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-1️⃣7️⃣ Install Sanctum
-composer require laravel/sanctum  
-php artisan vendor:publish --tag=sanctum-config  
-php artisan migrate
-
-1️⃣8️⃣ Update User model
-→ Add use HasApiTokens
-→ Include trait: HasApiTokens, SoftDeletes, ...
-
-1️⃣9️⃣ Protect product routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/{id}', [ProductController::class, 'show']);
-});
-
-Product Module (Jewelry eCommerce)
-2️⃣0️⃣ Create products table migration
-→ Fields: name, type, description, price, image, is_active
-
-2️⃣1️⃣ Create Product model and controller
-php artisan make:model Product -m  
-php artisan make:controller ProductController
-
-2️⃣2️⃣ Run migration
-→ php artisan migrate
-
-2️⃣3️⃣ Add fillable in Product.php model
-
-2️⃣4️⃣ Define CRUD methods in ProductController.php
-→ store(), index(), show()
-
-
-
-
-
-=---------------------------------------------- send mail to register
-1️⃣ Create Event
-php artisan make:event UserRegistered
-Add user property in event constructor
-
-2️⃣ Create Listener
-php artisan make:listener SendWelcomeMailListener --event=UserRegistered
-Implement ShouldQueue if background queue use karvi
-
-3️⃣ Create Mailable
-php artisan make:mail WelcomeMail --markdown=emails.welcome
-Use for welcome email template
-
-4️⃣ Fire Event in AuthController
-After user creation, add:
-event(new UserRegistered($user));
-
-5️⃣ Setup Mailtrap in .env
-php artisan config:clear
-php artisan cache:clear
-
-6️⃣ Queue Setup (Optional)
-php artisan queue:table
-php artisan migrate
-
-Run queue worker:
-php artisan queue:work
----------------------------------------------------
---------------------🔹 Direct Job + Queue Steps-------------------------
-1️⃣ Create Job
-php artisan make:job SendWelcomeMailJob
-2️⃣ Define Job Logic app/Jobs/SendWelcomeMailJob.php ma:
-
-3️⃣ Dispatch Job in Controller
-AuthController → register function ma, user create thay pachhi:
-SendWelcomeMailJob::dispatch($user);
----------------------------------------------------
